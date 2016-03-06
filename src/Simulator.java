@@ -12,6 +12,7 @@ import java.util.List;
  *
  */
 public class Simulator {
+	private static final int SIMULATION_TIME = 5000;
 	//statistics variables
 	public int jobsCount = 0; //total jobs that been processed 
 	public int turnaroundTimeCounter = 0; //sum of all job's turnaround time
@@ -34,12 +35,27 @@ public class Simulator {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		Simulator simulator = new Simulator();
+		
+		for (int i = 0; i < 10; i++) {
+			simulator.jobsList.add(Job.createNewJob());
+		}
+		
+		for (Job job : simulator.jobsList) {
+			System.out.println(job.toString());
+		}
 	}
 	
 	//based on discrete time
 	public void simulate(){
-		//
+		int jobInterval = RandomNumGenerator.getRandomNum(1, 10);
+		timer += jobInterval; // first time to generate a job
+		Job jobAtDoor = Job.createNewJob();
+		jobsList.add(jobAtDoor);//add job to job list
+		
+		while(timer < SIMULATION_TIME){
+			
+		}
 	}
 	
 	private Job getNextJobInMem(){

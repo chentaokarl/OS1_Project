@@ -21,6 +21,8 @@ public class MemoryManager {
 	private int rejectedJobs = 0; // count the amount of rejected jobs
 	private int externalFrag = 0; //count the amount of external fragmentation in bytes
 	
+	private static int nextHoleID = 1;
+	
 	/***
 	 * user can specify their total memory and os reserved memory
 	 * @param totalMem
@@ -243,6 +245,12 @@ public class MemoryManager {
 		memHolesList.add(newHole);
 	}
 	
+	
+	public void printHolesList() {
+		for (Hole hole : memHolesList) {
+			System.out.println("HoleID:"+hole.id +", " + "HoleSize:"+ hole.size + "Job:" + hole.job == null?"null":hole.job.getName());
+		}
+	}
 	private int usedMem(){
 		int used = 0; // calculate the current used memory
 		for (Hole hole : memHolesList) {
@@ -254,10 +262,13 @@ public class MemoryManager {
 	}
 	
 	private class Hole{
+		
+		int id = 0;
 		int size;//memory hole size
 		Job job = null;// the job in this hole
 		
 		public Hole() {
+			id = nextHoleID++;
 		}
 	}
 }
