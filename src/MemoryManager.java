@@ -42,6 +42,9 @@ public class MemoryManager {
 	}
 	
 	public void assignMem(String strategy, Job job){
+		for (Hole hole : memHolesList) {
+			System.out.println("Hole" + hole.id + ", " + "size: "+ hole.size + ", " + hole.job);
+		} 
 		if (FIRST_FIT.equals(strategy)) {
 			firstFit(job);
 		}else if (BEST_FIT.equals(strategy)) {
@@ -49,6 +52,10 @@ public class MemoryManager {
 		}else if (WORST_FIT.equals(strategy)) {
 			worstFit(job);
 		}
+		
+		for (Hole hole : memHolesList) {
+			System.out.println("Hole" + hole.id + ", " + "size: "+ hole.size + ", " + hole.job);
+		} 
 	}
 
 	// fisrst fit strategy
