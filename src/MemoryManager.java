@@ -13,13 +13,17 @@ import org.omg.PortableInterceptor.USER_EXCEPTION;
  *
  */
 public class MemoryManager {
+	public static final String FIRST_FIT= "firstfit";
+	public static final String BEST_FIT= "bestfit";
+	public static final String WORST_FIT= "worstfit";
+	
 	public int totalMem = 2000;//total memory capacity in KB, 2000KB
 	public int osReservedMem = 200;//memory reserved for operating system
 	public int initMem = totalMem - osReservedMem;//initial available memory for jobs
 	private int memNotAssigned2Hole = initMem; // indicate memory left that not been assigned to a hole
 	private List<Hole> memHolesList = new ArrayList<>();//trace memory holes
 	private int rejectedJobs = 0; // count the amount of rejected jobs
-	private int externalFrag = 0; //count the amount of external fragmentation in bytes
+	private int externalFrag = 0; //count the amount of external fragmentation in KB
 	
 	private static int nextHoleID = 1;
 	
@@ -35,6 +39,16 @@ public class MemoryManager {
 	}
 	
 	public MemoryManager() {
+	}
+	
+	public void assignMem(String strategy, Job job){
+		if (FIRST_FIT.equals(strategy)) {
+			firstFit(job);
+		}else if (BEST_FIT.equals(strategy)) {
+			bestFit(job);
+		}else if (WORST_FIT.equals(strategy)) {
+			worstFit(job);
+		}
 	}
 
 	// fisrst fit strategy
@@ -100,8 +114,8 @@ public class MemoryManager {
 		}
 		
 		if (bestFitHoleIndex != -1) {
-				memHolesList.get(bestFitHoleIndex).job.setStatus(JobStatus.ASSIGNED);
-				memHolesList.get(bestFitHoleIndex).job = job;
+			memHolesList.get(bestFitHoleIndex).job = job;
+			memHolesList.get(bestFitHoleIndex).job.setStatus(JobStatus.ASSIGNED);
 		}
 		
 		//if the job didn't be assigned to a current hole, try to give it the mem that not be assigned as hole and create a new hole
@@ -149,8 +163,8 @@ public class MemoryManager {
 		}
 
 		if (worstFitHoleIndex != -1) {
-			memHolesList.get(worstFitHoleIndex).job.setStatus(JobStatus.ASSIGNED);
 			memHolesList.get(worstFitHoleIndex).job = job;
+			memHolesList.get(worstFitHoleIndex).job.setStatus(JobStatus.ASSIGNED);
 		}
 
 		// if the job didn't be assigned to a current hole, try to give it the
@@ -179,16 +193,26 @@ public class MemoryManager {
 		}
 	}
 	
+	public void releaseMem(Job job){
+		for (Hole hole : memHolesList) {
+			if (null != hole.job) {
+				if (job.getId() == hole.job.getId()) {
+					hole.job = null;
+				}
+			}
+		}
+	}
+	
 	//storage utilization = used_mem/total_mem
 	public double storageUtilization(){
-		return Math.round(usedMem()*10000.0/totalMem)/100.0; //percentage
+		return usedMem()*1.0/totalMem; 
 	}
 	
 	//return the average hole size
 	public int averageHoleSize(){
 		int sum = 0;
 		for (Hole hole : memHolesList) {
-			sum += hole.job.getSize();
+			sum += hole.size;
 		}
 		
 		return sum/memHolesList.size(); 
@@ -207,7 +231,7 @@ public class MemoryManager {
 	 * @return the externalFrag
 	 */
 	public int getExternalFrag() {
-		return externalFrag;
+		return externalFrag*1024;
 	}
 
 	/**

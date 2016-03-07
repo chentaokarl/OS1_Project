@@ -149,4 +149,5 @@ public class Job {
 		return "Name:"+name+", "+"ID:"+id+", "+"Size:"+size+", "+"Duration:"+duration+", "+"Status:"+status;
 	}
 	
+	
 }
