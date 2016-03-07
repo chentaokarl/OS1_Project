@@ -1,4 +1,8 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.security.PrivilegedActionException;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,20 +39,79 @@ public class Simulator {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Simulator simulator = new Simulator();
-		
-		simulator.simulate(MemoryManager.FIRST_FIT);
-//		simulator.simulate(MemoryManager.BEST_FIT);
-//		simulator.simulate(MemoryManager.WORST_FIT);
+		BufferedWriter out = null;
+		//simulate first fit
+		Simulator firstFitSimulator = new Simulator();
+		System.out.println("First Fit Simulation Begins");
+		try {
+			out = new BufferedWriter
+			         (new FileWriter("FirstFit_Result_" + Calendar.getInstance().getTimeInMillis() + ".txt"));
+			firstFitSimulator.simulate(MemoryManager.FIRST_FIT, out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			if (null != out) {
+				try {
+					out.flush();
+					out.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		System.out.println("\nFirst Fit Simulation Ended\n");
+		System.out.println("----------------------------------------------------------------------------");
+		//simulate best fit
+		Simulator bestFitSimulator = new Simulator();
+		System.out.println("Best Fit Simulation Begins");
+		try {
+			out = new BufferedWriter
+			         (new FileWriter("BestFit_Result_" + Calendar.getInstance().getTimeInMillis() + ".txt" ));
+			bestFitSimulator.simulate(MemoryManager.BEST_FIT, out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			if (null != out) {
+				try {
+					out.flush();
+					out.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		System.out.println("\nBest Fit Simulation Ended\n");
+		System.out.println("----------------------------------------------------------------------------");
+		// simulate worst fit
+		Simulator worstFitSimulator = new Simulator();
+		System.out.println("Worst Fit Simulation Begins");
+		try {
+			out = new BufferedWriter(new FileWriter("WorstFit_Result_" + Calendar.getInstance().getTimeInMillis() + ".txt"));
+			worstFitSimulator.simulate(MemoryManager.WORST_FIT, out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (null != out) {
+				try {
+					out.flush();
+					out.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		System.out.println("\nWorst Fit Simulation Ended");
 	}
 	
 	//based on discrete time
-	public void simulate(String strategy){
+	public void simulate(String strategy, BufferedWriter output) throws IOException{
 		int jobInterval = 0, temp = 0;
-		
-		//create a job at time 0 VTUs
-		
-		
+		//timer start from 0 to 5000 VTUs
 		while(timer < SIMULATION_TIME){
 			jobInterval = RandomNumGenerator.getRandomNum(1, 10);
 			//update the job in processing
@@ -90,7 +153,7 @@ public class Simulator {
 					}
 					processingTimeCounter += jobInProcessing.getDuration();
 				}
-				
+				//current job finished and begin to process next job 
 				if ((jobInProcessing.getProcessedTime() + jobInterval) - jobInProcessing.getDuration() > 0) {
 					
 					if (jobsList.isEmpty()) {
@@ -130,30 +193,55 @@ public class Simulator {
 			temp = timer + jobInterval;
 			if (temp >= 1000 && temp <= 4000) {
 				if (temp/100 > timer/100) {
-					System.out.println("Time: " + ((timer/100)*100 + 100));
-					System.out.println("Storage Utilization: " + memManager.storageUtilization());
-					System.out.println("External Fragmentation(bytes): " + memManager.getExternalFrag());
-					System.out.println("Average Hole Size: " + memManager.averageHoleSize());
+					System.out.print("\nTime: " + ((timer/100)*100 + 100));
+					System.out.print(", Storage Utilization: " + Math.floor(memManager.storageUtilization()*10000)/100 + "%");
+					System.out.print(", External Fragmentation(bytes): " + memManager.getExternalFrag());
+					System.out.print(", Average Hole Size: " + memManager.averageHoleSize());
+					output.newLine();
+					output.write("Time: " + ((timer/100)*100 + 100));
+					output.write(", Storage Utilization: " + Math.floor(memManager.storageUtilization()*10000)/100 + "%");
+					output.write(", External Fragmentation(bytes): " + memManager.getExternalFrag());
+					output.write(", Average Hole Size: " + memManager.averageHoleSize());
+					
 				}
 			}
 			
 			//print rejected jobs at 1000, 2000, 3000, 4000, 5000 VTUs
 			if (temp/1000 > timer/1000) {
-				System.out.println("Time: " + ((timer/1000)*1000 + 1000));
-				System.out.println("Rejected jobs: " + memManager.getRejectedJobs());
+				System.out.print("\nTime: " + ((timer/1000)*1000 + 1000));
+				System.out.print("  Rejected jobs: " + memManager.getRejectedJobs());
+				
+				output.write("\nTime: " + ((timer/1000)*1000 + 1000));
+				output.write("  Rejected jobs: " + memManager.getRejectedJobs());
 			}
 			
 			//print average time at 4000 VTUs
 			if (timer < 4000 && temp >= 4000) {
-				System.out.println("Time: " + ((timer/100)*100 + 100));
-//				memManager.printHolesList();
-				System.out.println("Storage Utilization: " + (memManager.storageUtilization()*100) + "%");
-				System.out.println("External Fragmentation(bytes): " + memManager.getExternalFrag());
-				System.out.println("Average Hole Size (KB): " + memManager.averageHoleSize());
+				if (temp != 4000) {
+					System.out.print("\nTime: " + ((timer/100)*100 + 100));
+	//				memManager.printHolesList();
+					System.out.print(", Storage Utilization: " + Math.floor(memManager.storageUtilization()*10000)/100 + "%");
+					System.out.print(", External Fragmentation(bytes): " + memManager.getExternalFrag());
+					System.out.print(", Average Hole Size (KB): " + memManager.averageHoleSize());
+				}
 				
-				System.out.println("Average turnaround time(VTUs):"+(turnaroundTimeCounter*1.0/processedJobsCounter));
-				System.out.println("Average waiting time(VTUs):"+((turnaroundTimeCounter - processingTimeCounter)*1.0/processedJobsCounter));
-				System.out.println("Average processing time(VTUs):"+(processingTimeCounter*1.0/processedJobsCounter));
+				System.out.print("\nAverage turnaround time(VTUs):"+ (Math.floor(turnaroundTimeCounter*100.0/processedJobsCounter)/100));
+				System.out.print(", Average waiting time(VTUs):"+ (Math.floor((turnaroundTimeCounter - processingTimeCounter)*100.0/processedJobsCounter)/100));
+				System.out.print(", Average processing time(VTUs):"+ (Math.floor(processingTimeCounter*100.0/processedJobsCounter)/100));
+				System.out.println("");
+				
+				if (temp != 4000) {
+					output.newLine();
+					output.write("Time: " + ((timer/100)*100 + 100));
+					output.write(", Storage Utilization: " + Math.floor(memManager.storageUtilization()*10000)/100 + "%");
+					output.write(", External Fragmentation(bytes): " + memManager.getExternalFrag());
+					output.write(", Average Hole Size (KB): " + memManager.averageHoleSize());
+				}
+				output.newLine();
+				output.write("Average turnaround time(VTUs):" + (Math.floor(turnaroundTimeCounter*100.0/processedJobsCounter)/100));
+				output.write(", Average waiting time(VTUs):" + (Math.floor((turnaroundTimeCounter - processingTimeCounter)*100.0/processedJobsCounter)/100));
+				output.write(", Average processing time(VTUs):" + (Math.floor(processingTimeCounter*100.0/processedJobsCounter)/100));
+				output.newLine();
 			}
 			
 			//add timer

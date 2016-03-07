@@ -24,6 +24,7 @@ public class MemoryManager {
 	private List<Hole> memHolesList = new ArrayList<>();//trace memory holes
 	private int rejectedJobs = 0; // count the amount of rejected jobs
 	private int externalFrag = 0; //count the amount of external fragmentation in KB
+	private List<Hole> fragHolesList = new ArrayList<>();//trace fragmentation holes
 	
 	private static int nextHoleID = 1;
 	
@@ -77,19 +78,18 @@ public class MemoryManager {
 					job.setStatus(JobStatus.REJECTED);
 					rejectedJobs ++;
 					
-					// External fragmentation exists when there is enough total
-					// memory space to satisfy a request but the available spaces
-					// are not contiguous
-					if((initMem - usedMem()) >= job.getSize())
-						externalFrag = initMem - usedMem();
 				}else {
 					job.setStatus(JobStatus.WAIT);//wait for free hole
 				}
 			}else{
 				//external fragmentation generates
 				if (job.getSize() < memHolesList.get(firstFitHoleIndex).size) {
-					createNewHole(memHolesList.get(firstFitHoleIndex).size - job.getSize());
+					Hole tempNewHole = createNewHole(memHolesList.get(firstFitHoleIndex).size - job.getSize());
 					memHolesList.get(firstFitHoleIndex).size = job.getSize();
+					// External fragmentation exists when there is enough total
+					// memory space to satisfy a request but the available spaces
+					// are not contiguous
+					fragHolesList.add(tempNewHole);
 				}
 			}
 	}
@@ -125,19 +125,18 @@ public class MemoryManager {
 			}else if (greaterThanAll) { // greater than all current hole sizes and the available mem
 				job.setStatus(JobStatus.REJECTED);
 				rejectedJobs ++;
-				// External fragmentation exists when there is enough total
-				// memory space to satisfy a request but the available spaces
-				// are not contiguous
-				if((initMem - usedMem()) >= job.getSize())
-					externalFrag = initMem - usedMem();
 			}else {
 				job.setStatus(JobStatus.WAIT);//wait for free hole
 			}
 		}else{
 			//external fragmentation generates
 			if (job.getSize() < memHolesList.get(bestFitHoleIndex).size) {
-				createNewHole(memHolesList.get(bestFitHoleIndex).size - job.getSize());
+				Hole tempNewHole = createNewHole(memHolesList.get(bestFitHoleIndex).size - job.getSize());
 				memHolesList.get(bestFitHoleIndex).size = job.getSize();
+				// External fragmentation exists when there is enough total
+				// memory space to satisfy a request but the available spaces
+				// are not contiguous
+				fragHolesList.add(tempNewHole);
 			}
 		}
 	}
@@ -176,19 +175,18 @@ public class MemoryManager {
 											// and the available mem
 				job.setStatus(JobStatus.REJECTED);
 				rejectedJobs ++;
-				// External fragmentation exists when there is enough total
-				// memory space to satisfy a request but the available spaces
-				// are not contiguous
-				if((initMem - usedMem()) >= job.getSize())
-					externalFrag = initMem - usedMem();
 			} else {
 				job.setStatus(JobStatus.WAIT);// wait for free hole
 			}
 		}else{
 			//external fragmentation generates
 			if (job.getSize() < memHolesList.get(worstFitHoleIndex).size) {
-				createNewHole(memHolesList.get(worstFitHoleIndex).size - job.getSize());
+				Hole tempNewHole = createNewHole(memHolesList.get(worstFitHoleIndex).size - job.getSize());
 				memHolesList.get(worstFitHoleIndex).size = job.getSize();
+				// External fragmentation exists when there is enough total
+				// memory space to satisfy a request but the available spaces
+				// are not contiguous
+				fragHolesList.add(tempNewHole);
 			}
 		}
 	}
@@ -231,7 +229,13 @@ public class MemoryManager {
 	 * @return the externalFrag
 	 */
 	public int getExternalFrag() {
-		return externalFrag*1024;
+		externalFrag = 0;
+		for (Hole hole : fragHolesList) {
+			if (null == hole.job) {
+				externalFrag += hole.size;
+			}
+		}
+		return externalFrag*1000;
 	}
 
 	/**
@@ -261,12 +265,13 @@ public class MemoryManager {
 		memNotAssigned2Hole -= job.getSize();
 	}
 	
-	private void createNewHole(int size){
+	private Hole createNewHole(int size){
 		Hole newHole = new Hole();
 		newHole.size = size;
 		newHole.job = null;
 		
 		memHolesList.add(newHole);
+		return newHole;
 	}
 	
 	
