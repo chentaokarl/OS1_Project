@@ -57,7 +57,6 @@ public class Simulator {
 					timer += jobInterval;
 					if (null == jobAtDoor) {
 						jobAtDoor = Job.createNewJob();
-						System.out.println(jobAtDoor.toString());
 					}
 					memManager.assignMem(strategy, jobAtDoor);
 					
@@ -74,6 +73,7 @@ public class Simulator {
 					continue;
 				}
 				jobInProcessing = jobsList.remove(0); //run the next job in the list which has been assigned memory before
+				jobInProcessing.setStatus(JobStatus.PROCESSING);
 			}
 			//check if job in processing can be finished during this job arrive interval VTUs
 			if ((jobInProcessing.getProcessedTime() + jobInterval) >= jobInProcessing.getDuration()) {
@@ -85,6 +85,9 @@ public class Simulator {
 				if(jobInProcessing.getStartTime() >= 1000 && jobInProcessing.getEndTime() <= 4000 ){
 					processedJobsCounter++;
 					turnaroundTimeCounter += (jobInProcessing.getEndTime() - jobInProcessing.getStartTime());
+					if ((jobInProcessing.getEndTime() - jobInProcessing.getStartTime()) < jobInProcessing.getDuration()) {
+						System.out.println("Error Job-- " + jobInProcessing);
+					}
 					processingTimeCounter += jobInProcessing.getDuration();
 				}
 				
@@ -109,9 +112,10 @@ public class Simulator {
 						}
 						continue;
 					}
+					temp =  timer + (jobInProcessing.getDuration() - jobInProcessing.getProcessedTime()); //next job start at the end of current job
 					jobInProcessing = jobsList.remove(0); //run the next job in the list which has been assigned memory before
-					jobInProcessing.setStartTime(timer + (jobInProcessing.getDuration() - jobInProcessing.getProcessedTime()));
 					jobInProcessing.setStatus(JobStatus.PROCESSING);
+					jobInProcessing.setProcessedTime(timer + jobInterval - temp);
 				}else{
 					jobInProcessing = null;
 				}
@@ -142,15 +146,17 @@ public class Simulator {
 			//print average time at 4000 VTUs
 			if (timer < 4000 && temp >= 4000) {
 				System.out.println("Time: " + ((timer/100)*100 + 100));
-				System.out.println("Storage Utilization: " + memManager.storageUtilization());
+//				memManager.printHolesList();
+				System.out.println("Storage Utilization: " + (memManager.storageUtilization()*100) + "%");
 				System.out.println("External Fragmentation(bytes): " + memManager.getExternalFrag());
-				System.out.println("Average Hole Size: " + memManager.averageHoleSize());
+				System.out.println("Average Hole Size (KB): " + memManager.averageHoleSize());
 				
-				System.out.println("Average turnaround time:"+(turnaroundTimeCounter*1.0/processedJobsCounter));
-				System.out.println("Average waiting time:"+((turnaroundTimeCounter - processingTimeCounter)*1.0/processedJobsCounter));
-				System.out.println("Average processing time:"+(processingTimeCounter*1.0/processedJobsCounter));
+				System.out.println("Average turnaround time(VTUs):"+(turnaroundTimeCounter*1.0/processedJobsCounter));
+				System.out.println("Average waiting time(VTUs):"+((turnaroundTimeCounter - processingTimeCounter)*1.0/processedJobsCounter));
+				System.out.println("Average processing time(VTUs):"+(processingTimeCounter*1.0/processedJobsCounter));
 			}
 			
+			//add timer
 			timer += jobInterval;
 			
 			if (null == jobAtDoor) {
@@ -163,11 +169,14 @@ public class Simulator {
 				memManager.assignMem(strategy, jobAtDoor);
 			}
 			
+//			System.out.println(jobAtDoor);
 			if (JobStatus.ASSIGNED.equals(jobAtDoor.getStatus())){
 				jobAtDoor.setStartTime(timer);
 				jobsList.add(jobAtDoor);//add job to list
 				jobAtDoor = null;
 			}
+//			System.out.println(jobInProcessing);
+//			memManager.printHolesList();
 		}
 	}
 	

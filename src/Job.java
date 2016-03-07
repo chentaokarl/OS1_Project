@@ -7,8 +7,8 @@ public class Job {
 	private int size = 0; //KB indicates the size of a job (50--300 in multiples of 10
 	private int duration = 0;// indicates the processing time (5--60 VTUs in multiples of 5 VTUs
 	private int processedTime = 0; //count the time already be executed
-	private int startTime = 0; //in terms of VTUs
-	private int endTime = 0; //in termsof VTUs
+	private int startTime = -1; //in terms of VTUs
+	private int endTime = -1; //in termsof VTUs
 	
 	private static int nextJobID = 1;
 	
@@ -146,7 +146,7 @@ public class Job {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "Name:"+name+", "+"ID:"+id+", "+"Size:"+size+", "+"Duration:"+duration+", "+"Status:"+status;
+		return "Name:"+name+", ID:"+id+", Size:"+size+", Duration:"+duration+", Status:"+status +", Start:"+startTime + ", End:"+endTime;
 	}
 	
 	

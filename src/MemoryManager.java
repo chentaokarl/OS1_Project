@@ -42,9 +42,6 @@ public class MemoryManager {
 	}
 	
 	public void assignMem(String strategy, Job job){
-		for (Hole hole : memHolesList) {
-			System.out.println("Hole" + hole.id + ", " + "size: "+ hole.size + ", " + hole.job);
-		} 
 		if (FIRST_FIT.equals(strategy)) {
 			firstFit(job);
 		}else if (BEST_FIT.equals(strategy)) {
@@ -52,10 +49,6 @@ public class MemoryManager {
 		}else if (WORST_FIT.equals(strategy)) {
 			worstFit(job);
 		}
-		
-		for (Hole hole : memHolesList) {
-			System.out.println("Hole" + hole.id + ", " + "size: "+ hole.size + ", " + hole.job);
-		} 
 	}
 
 	// fisrst fit strategy
@@ -210,9 +203,9 @@ public class MemoryManager {
 		}
 	}
 	
-	//storage utilization = used_mem/total_mem
+	//storage utilization = used_mem/initMem
 	public double storageUtilization(){
-		return usedMem()*1.0/totalMem; 
+		return usedMem()*1.0/initMem; 
 	}
 	
 	//return the average hole size
@@ -279,7 +272,7 @@ public class MemoryManager {
 	
 	public void printHolesList() {
 		for (Hole hole : memHolesList) {
-			System.out.println("HoleID:"+hole.id +", " + "HoleSize:"+ hole.size + "Job:" + hole.job == null?"null":hole.job.getName());
+			System.out.println("HoleID:"+hole.id +", HoleSize:"+ hole.size + ", Job:" + (hole.job == null?"null":hole.job.getName()));
 		}
 	}
 	private int usedMem(){
