@@ -8,19 +8,19 @@ import java.util.Random;
  */
 public class RandomNumGenerator {
 	/**
-	 * The following variables are defined to generate a random number according
-	 * to the article "Random Number Generators: Good Ones Are Hard to Find",
-	 * Communications of the ACM, Vol. 31 No. 10, October 1988, pp. 1192-1201.
+	 * The following variables are defined to generate a random number 
+	 * according to the article "Random Number Generators: Good Ones
+	 *  Are Hard to Find", Communications of the ACM, Vol. 31 No. 10,
+	 *  October 1988, pp. 1192-1201.
 	 */
 	private static final double a = 16807.0;
 	private static final double m = 2147483647.0;
 	private static final double q = 127773.0;
 	private static final double r = 2836.0;
 	private static final double lambda = 2.38907;
-
-	private static final double DEFAULT_SEED = 0.009;// used as default seed
-														// when user didn't give
-														// one
+	
+	//used as default seed when user didn't give one
+	private static final double DEFAULT_SEED = 0.009;
 
 	/**
 	 * Default constructor
@@ -28,6 +28,10 @@ public class RandomNumGenerator {
 	public RandomNumGenerator() {
 	}
 
+	/**
+	 * generated a random number in the range between
+	 * lower and upper without giving a seed
+	 */
 	public static int getRandomNum(int lower, int upper) {
 		return getRandomNum(DEFAULT_SEED, lower, upper);
 	}
@@ -79,8 +83,9 @@ public class RandomNumGenerator {
 		/* don't want a number less than lower */
 		while (norm < lower) {
 			temp2 = -Math.log(random(seed)) / lambda;
-			/*
-			 * Pascal: trunc(exp(random(seed)*maxint))/2.38907 mod upper
+			/**
+			 * Pascal: 
+			 * trunc(exp(random(seed)*maxint))/2.38907 mod upper
 			 */
 			while (temp2 > 1)
 				temp2 = temp2 - 1.0;

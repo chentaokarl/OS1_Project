@@ -3,7 +3,7 @@
  */
 
 /**
- * constants defined in this class
+ * Job status constants defined in this class
  * 
  * @author Tao
  *
