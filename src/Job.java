@@ -1,4 +1,9 @@
-
+/**
+ * represented the jobs/tasks in the operting system
+ * used to record the information of a job
+ * @author Chen
+ *
+ */
 public class Job {
 
 	private int id = 0;
@@ -8,7 +13,8 @@ public class Job {
 	private JobStatus status; 
 	//KB indicates the size of a job (50--300 in multiples of 10
 	private int size = 0; 
-	// indicates the processing/duration time (5--60 VTUs in multiples of 5 VTUs
+	// indicates the processing/duration time 
+	//(5--60 VTUs in multiples of 5 VTUs
 	private int duration = 0;
 	//count the time already be executed
 	private int processedTime = 0;
@@ -22,7 +28,11 @@ public class Job {
 	
 	private Job() {
 	}
-	
+	/**
+	 * use this method to create
+	 * a new job with random size and duration
+	 * @return a new Job
+	 */
 	public static Job createNewJob(){
 		Job newJob = new Job();
 		
@@ -152,9 +162,11 @@ public class Job {
 
 	@Override
 	public String toString() {
+		//return a string including the information of the job
 		return "Name:" + name + ", ID:" + id + ", Size:" + size 
-				+", Duration:" + duration + ", Status:" + status
-				+ ", Start:" + startTime + ", End:" + endTime + ", processedTime:" + processedTime;
+			+", Duration:" + duration + ", Status:" + status
+			+ ", Start:" + startTime + ", End:" + endTime 
+			+ ", processedTime:" + processedTime;
 	}
 	
 	

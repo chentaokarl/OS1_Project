@@ -1,0 +1,39 @@
+
+Time: 1000, Storage Utilization: 29.44%, External Fragmentation(bytes): 706560, Average Hole Size: 46
+Time: 1000  Rejected jobs: 32
+Time: 1100, Storage Utilization: 23.33%, External Fragmentation(bytes): 819200, Average Hole Size: 46
+Time: 1200, Storage Utilization: 27.77%, External Fragmentation(bytes): 911360, Average Hole Size: 43
+Time: 1300, Storage Utilization: 26.11%, External Fragmentation(bytes): 952320, Average Hole Size: 41
+Time: 1400, Storage Utilization: 18.88%, External Fragmentation(bytes): 1013760, Average Hole Size: 39
+Time: 1500, Storage Utilization: 16.11%, External Fragmentation(bytes): 1013760, Average Hole Size: 39
+Time: 1600, Storage Utilization: 11.66%, External Fragmentation(bytes): 1034240, Average Hole Size: 38
+Time: 1700, Storage Utilization: 9.44%, External Fragmentation(bytes): 1044480, Average Hole Size: 37
+Time: 1800, Storage Utilization: 15.55%, External Fragmentation(bytes): 1003520, Average Hole Size: 36
+Time: 1900, Storage Utilization: 39.44%, External Fragmentation(bytes): 860160, Average Hole Size: 33
+Time: 2000, Storage Utilization: 41.66%, External Fragmentation(bytes): 921600, Average Hole Size: 32
+Time: 2000  Rejected jobs: 161
+Time: 2100, Storage Utilization: 35.0%, External Fragmentation(bytes): 921600, Average Hole Size: 32
+Time: 2200, Storage Utilization: 34.44%, External Fragmentation(bytes): 1003520, Average Hole Size: 31
+Time: 2300, Storage Utilization: 31.66%, External Fragmentation(bytes): 1003520, Average Hole Size: 31
+Time: 2400, Storage Utilization: 25.55%, External Fragmentation(bytes): 1064960, Average Hole Size: 31
+Time: 2500, Storage Utilization: 19.44%, External Fragmentation(bytes): 1126400, Average Hole Size: 31
+Time: 2600, Storage Utilization: 18.33%, External Fragmentation(bytes): 1075200, Average Hole Size: 30
+Time: 2700, Storage Utilization: 10.55%, External Fragmentation(bytes): 1126400, Average Hole Size: 30
+Time: 2800, Storage Utilization: 7.77%, External Fragmentation(bytes): 1177600, Average Hole Size: 30
+Time: 2900, Storage Utilization: 12.77%, External Fragmentation(bytes): 1136640, Average Hole Size: 29
+Time: 3000, Storage Utilization: 15.55%, External Fragmentation(bytes): 1146880, Average Hole Size: 29
+Time: 3000  Rejected jobs: 232
+Time: 3100, Storage Utilization: 12.77%, External Fragmentation(bytes): 1146880, Average Hole Size: 29
+Time: 3200, Storage Utilization: 9.44%, External Fragmentation(bytes): 1146880, Average Hole Size: 29
+Time: 3300, Storage Utilization: 15.55%, External Fragmentation(bytes): 1146880, Average Hole Size: 29
+Time: 3400, Storage Utilization: 15.55%, External Fragmentation(bytes): 1146880, Average Hole Size: 29
+Time: 3500, Storage Utilization: 12.77%, External Fragmentation(bytes): 1146880, Average Hole Size: 29
+Time: 3600, Storage Utilization: 12.77%, External Fragmentation(bytes): 1146880, Average Hole Size: 29
+Time: 3700, Storage Utilization: 20.55%, External Fragmentation(bytes): 1208320, Average Hole Size: 29
+Time: 3800, Storage Utilization: 26.11%, External Fragmentation(bytes): 1157120, Average Hole Size: 28
+Time: 3900, Storage Utilization: 15.0%, External Fragmentation(bytes): 1157120, Average Hole Size: 28
+Time: 4000  Rejected jobs: 441
+Time: 4000, Storage Utilization: 17.77%, External Fragmentation(bytes): 1157120, Average Hole Size (KB): 28
+Average turnaround time(VTUs):208.86, Average waiting time(VTUs):175.77, Average processing time(VTUs):33.08
+
+Time: 5000  Rejected jobs: 678

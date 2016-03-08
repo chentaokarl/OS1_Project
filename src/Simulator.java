@@ -36,7 +36,7 @@ public class Simulator {
 	
 
 	/**
-	 * 
+	 * constructor
 	 */
 	public Simulator() {
 	}
@@ -46,10 +46,11 @@ public class Simulator {
 	 */
 	public static void main(String[] args) {
 		BufferedWriter out = null;
-		//simulate first fit
+		//simulate first fit strategy
 		Simulator firstFitSim = new Simulator();
 		System.out.println("First Fit Simulation Begins");
 		try {
+			//I print infomation both on stdout(screen) and into a file
 			out = new BufferedWriter(new FileWriter("FirstFit_Result_" 
 					 	+ Calendar.getInstance().getTimeInMillis() + ".txt"));
 			firstFitSim.simulate(MemoryManager.FIRST_FIT, out);
@@ -67,10 +68,11 @@ public class Simulator {
 		}
 		System.out.println("\nFirst Fit Simulation Ended\n");
 		System.out.println("-------------------------------");
-		//simulate best fit
+		//simulate best fit strategy
 		Simulator bestFitSim = new Simulator();
 		System.out.println("Best Fit Simulation Begins");
 		try {
+			//I print infomation both on stdout(screen) and into a file
 			out = new BufferedWriter(new FileWriter("BestFit_Result_" 
 						+ Calendar.getInstance().getTimeInMillis() + ".txt" ));
 			bestFitSim.simulate(MemoryManager.BEST_FIT, out);
@@ -90,10 +92,11 @@ public class Simulator {
 		System.out.println("\nBest Fit Simulation Ended\n");
 		System.out.println("-----------------------------");
 		
-		// simulate worst fit
+		// simulate worst fit strategy
 		Simulator worstFitSim = new Simulator();
 		System.out.println("Worst Fit Simulation Begins");
 		try {
+			//I print infomation both on stdout(screen) and into a file
 			out = new BufferedWriter(new FileWriter("WorstFit_Result_" 
 						+ Calendar.getInstance().getTimeInMillis() + ".txt"));
 			worstFitSim.simulate(MemoryManager.WORST_FIT, out);
@@ -112,7 +115,14 @@ public class Simulator {
 		System.out.println("\nWorst Fit Simulation Ended");
 	}
 	
-	//based on discrete time
+	
+	/**
+	 * based on discrete time
+	 * use the specified strategy and output file writer
+	 * @param strategy
+	 * @param output
+	 * @throws IOException
+	 */
 	public void simulate(String strategy, BufferedWriter output) throws IOException{
 		int jobInterval = 0, temp = 0;
 		//timer start from 0 to 5000 VTUs
@@ -193,9 +203,12 @@ public class Simulator {
 					//next job start at the end of current job
 					temp =  timer + (jobInProcessing.getDuration() - jobInProcessing.getProcessedTime()); 
 					//run the next job in the list which
-					//has been assigned memory before
+					//has been assigned memory 
 					jobInProcessing = jobsList.remove(0); 
 					jobInProcessing.setStatus(JobStatus.PROCESSING);
+					
+					//in case the duration of next job is very short
+					//compare its duration with the time left over
 					if ((timer + jobInterval - temp) < jobInProcessing.getDuration()) {
 						jobInProcessing.setProcessedTime(timer + jobInterval - temp);
 					}else if ((timer + jobInterval - temp) >= jobInProcessing.getDuration()) {
@@ -215,6 +228,8 @@ public class Simulator {
 						if ((timer + jobInterval - temp) == jobInProcessing.getDuration()) {
 							jobInProcessing = null;
 						}else{
+							//jobs list is empty means no jobs 
+							//been assigned memory yet
 							if (jobsList.isEmpty()) {
 								timer += jobInterval;
 								if (null == jobAtDoor) {
@@ -247,7 +262,8 @@ public class Simulator {
 				jobInProcessing.setProcessedTime(jobInProcessing.getProcessedTime() + jobInterval);
 			}
 			
-			//discrete time to print information 
+			//discrete time to print information
+			//print info both on screen and to a file
 			//between 1000 and 4000 VTUs
 			temp = timer + jobInterval;
 			if (temp >= 1000 && temp <= 4000) {
@@ -260,7 +276,7 @@ public class Simulator {
 					output.write("Time: " + ((timer/100)*100 + 100));
 					output.write(", Storage Utilization: " + Math.floor(memManager.storageUtilization()*10000)/100 + "%");
 					output.write(", External Fragmentation(bytes): " + memManager.getExternalFrag());
-					output.write(", Average Hole Size: " + memManager.averageHoleSize());
+					output.write(", Average Hole Size (KB): " + memManager.averageHoleSize());
 					
 				}
 			}
@@ -303,7 +319,7 @@ public class Simulator {
 				output.newLine();
 			}
 			
-			//add timer
+			//timer goes on
 			timer += jobInterval;
 			
 			if (null == jobAtDoor) {
@@ -321,15 +337,7 @@ public class Simulator {
 				jobsList.add(jobAtDoor);//add job to list
 				jobAtDoor = null;
 			}
-//			System.out.println(jobInProcessing);
 		}
 	}
 	
-	private Job getNextJobInMem(){
-		if (jobsList.size() > 0) 
-			return jobsList.remove(0);
-		else
-			return null;
-	}
-
 }

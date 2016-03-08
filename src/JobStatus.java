@@ -1,10 +1,7 @@
-/**
- * 
- */
 
 /**
  * Job status constants defined in this class
- * 
+ * Defined all the job states
  * @author Tao
  *
  */

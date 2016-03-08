@@ -1,12 +1,9 @@
-import java.awt.JobAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.omg.PortableInterceptor.USER_EXCEPTION;
-
 /**
- * This class used as Memory Management unit in system
- * it assigns and trace memory holes
+ * This class likes the Memory Management Unit in system
+ * It will in charge of assigning and tracing memory info
  * @author Tao
  *
  */
@@ -37,7 +34,7 @@ public class MemoryManager {
 
 	/***
 	 * user can specify their total memory and os reserved memory
-	 * 
+	 * if not specified, use the default mem 2000KB and 200 KB 
 	 * @param totalMem
 	 * @param osReservedMem
 	 */
@@ -66,11 +63,14 @@ public class MemoryManager {
 		}
 	}
 
-	// fisrst fit strategy
+	/**
+	 * fisrst fit strategy
+	 * @param job
+	 */
 	public void firstFit(Job job) {
 		/**
-		 * greaterThanAll used to indicate if the size job requested is greater
-		 * than all hole size or not
+		 * greaterThanAll used to indicate if the size job requested 
+		 * is greater than all hole size or not
 		 */
 		boolean greaterThanAll = true;
 		// use to record the first fit hole index
@@ -89,14 +89,15 @@ public class MemoryManager {
 				}
 			}
 		}
-		// if the job didn't be assigned to a current hole, try to give it
-		// the mem that not be assigned as hole and create a new hole
+		// if the job didn't be assigned to a current hole, 
+		// try to give it the mem that not be assigned as hole 
+		// and create a new hole
 		if (JobStatus.ASSIGNED != job.getStatus()) {
 			if (job.getSize() <= memNotAssigned2Hole) {
 				createNewHole(job);
 			} else if (greaterThanAll) {
-				// Rejected when greater than all current hole sizes
-				// and the available memory
+				// Reject when greater than all current 
+				// hole sizes and the available memory
 				job.setStatus(JobStatus.REJECTED);
 				rejectedJobs++;
 			} else {
@@ -110,7 +111,8 @@ public class MemoryManager {
 			 * available spaces are not contiguous
 			 */
 			if (job.getSize() < memHolesList.get(firstFitHoleIndex).size) {
-				// external fragmentation happened
+				// external fragmentation happened when
+				//job didn't take the whole size of a hole
 				Hole tempNewHole = createNewHole(memHolesList.get(firstFitHoleIndex).size - job.getSize());
 				memHolesList.get(firstFitHoleIndex).size = job.getSize();
 				fragHolesList.add(tempNewHole);
@@ -118,19 +120,24 @@ public class MemoryManager {
 		}
 	}
 
-	// best fit strategy
+	
+	/**
+	 * best fit strategy
+	 * @param job
+	 */
 	public void bestFit(Job job) {
 		/**
-		 * greaterThanAll used to indicate if the size job requested is greater
-		 * than all hole size or not
+		 * greaterThanAll used to indicate if the size job requested 
+		 * is greater than all hole size or not
 		 */
 		boolean greaterThanAll = true;
 		// use to record the best fit hole index
 		int bestFitHoleIndex = -1;
 
 		/**
-		 * find the best fit hole among the holes we have and also compare the
-		 * size and are free job requested with all the hole size
+		 * find the best fit hole among the holes we have 
+		 * and also compare the size job requested with
+		 * all the hole sizes
 		 */
 		for (Hole hole : memHolesList) {
 			if (job.getSize() <= hole.size) {
@@ -149,28 +156,32 @@ public class MemoryManager {
 		}
 
 		/**
-		 * if the job didn't be assigned to a current hole, try to give it the
-		 * mem that not be assigned as hole and create a new hole
+		 * if the job didn't be assigned to a current hole, 
+		 * try to give it the mem that not be assigned as hole 
+		 * and create a new hole
 		 */
 		if (JobStatus.ASSIGNED != job.getStatus()) {
 			if (job.getSize() <= memNotAssigned2Hole) {
 				createNewHole(job);
 			} else if (greaterThanAll) {
-				// Rejected when greater than all current hole sizes
-				// and the available memory
+				// Reject when greater than all current 
+				// hole sizes and the available memory
 				job.setStatus(JobStatus.REJECTED);
 				rejectedJobs++;
 			} else {
-				job.setStatus(JobStatus.WAIT);// wait for free hole
+				// wait for the free hole fits the job
+				job.setStatus(JobStatus.WAIT);
 			}
 		} else {
 			/**
-			 * External fragmentation exists when there is enough 
-			 * total memory space to satisfy a request but
-			 * available spaces are not contiguous
+			 * External fragmentation exists when 
+			 * there is enough total memory space 
+			 * to satisfy a request but available 
+			 * spaces are not contiguous
 			 */
 			if (job.getSize() < memHolesList.get(bestFitHoleIndex).size) {
-				// external fragmentation happened
+				// external fragmentation happened when 
+				//job didn't take the whole size of a hole
 				Hole tempNewHole = createNewHole(memHolesList.get(bestFitHoleIndex).size - job.getSize());
 				memHolesList.get(bestFitHoleIndex).size = job.getSize();
 				fragHolesList.add(tempNewHole);
@@ -178,7 +189,10 @@ public class MemoryManager {
 		}
 	}
 
-	// worst fit strategy
+	/**
+	 * worst fit strategy
+	 * @param job
+	 */
 	public void worstFit(Job job) {
 		/**
 		 * greaterThanAll used to indicate if the size job requested is greater
@@ -218,8 +232,8 @@ public class MemoryManager {
 			if (job.getSize() <= memNotAssigned2Hole) {
 				createNewHole(job);
 			} else if (greaterThanAll) { 
-				// Rejected when greater than all current hole sizes
-				// and the available memory
+				// Reject when greater than all current 
+				// hole sizes and the available memory
 				job.setStatus(JobStatus.REJECTED);
 				rejectedJobs++;
 			} else {
@@ -233,7 +247,8 @@ public class MemoryManager {
 			 * available spaces are not contiguous
 			 */
 			if (job.getSize() < memHolesList.get(worstFitHoleIndex).size) {
-				// external fragmentation happened
+				// external fragmentation happened when
+				// job didn't take the whole size of a hole
 				Hole tempNewHole = createNewHole(memHolesList.get(worstFitHoleIndex).size - job.getSize());
 				memHolesList.get(worstFitHoleIndex).size = job.getSize();
 				fragHolesList.add(tempNewHole);
@@ -286,6 +301,7 @@ public class MemoryManager {
 				externalFrag += hole.size;
 			}
 		}
+		//return in bytes (externalFrag is KB here)
 		return externalFrag * 1024;
 	}
 
