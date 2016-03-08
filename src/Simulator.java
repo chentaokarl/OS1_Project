@@ -1,3 +1,10 @@
+
+/**
+  * Name: Tao Chen
+  * Course: CS4323
+  * Assignment: CS 4323 Simulation Project, Phase I
+  * TA: Sarath Kumar Maddinani
+  */
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -7,7 +14,8 @@ import java.util.List;
 
 
 /**
- * simulator based on discrete time in terms of VTUs
+ * This is the Runnable class for this project
+ * Simulator based on discrete time in terms of VTUs
  * run three simulations in once but separately
  * @author Chen
  *
@@ -42,7 +50,9 @@ public class Simulator {
 	}
 
 	/**
-	 * @param args
+	 * main function to run the project 
+	 * three strategies will be simulated 
+	 * one by one at a time
 	 */
 	public static void main(String[] args) {
 		BufferedWriter out = null;
