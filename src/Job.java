@@ -154,7 +154,7 @@ public class Job {
 	public String toString() {
 		return "Name:" + name + ", ID:" + id + ", Size:" + size 
 				+", Duration:" + duration + ", Status:" + status
-				+ ", Start:" + startTime + ", End:" + endTime;
+				+ ", Start:" + startTime + ", End:" + endTime + ", processedTime:" + processedTime;
 	}
 	
 	

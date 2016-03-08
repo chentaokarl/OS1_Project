@@ -286,7 +286,7 @@ public class MemoryManager {
 				externalFrag += hole.size;
 			}
 		}
-		return externalFrag * 1000;
+		return externalFrag * 1024;
 	}
 
 	/**
