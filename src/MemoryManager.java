@@ -11,9 +11,15 @@ import java.util.List;
  */
 public class MemoryManager {
 	// three stategies
-	public static final String FIRST_FIT = "firstfit";
-	public static final String BEST_FIT = "bestfit";
-	public static final String WORST_FIT = "worstfit";
+	public static final String FIRST_FIT = "Firstfit";
+	public static final String BEST_FIT = "Bestfit";
+	public static final String WORST_FIT = "Worstfit";
+	// Scenarios 1: compact when a memory reqeust is denied
+	public static final String COMP_REQ_DENIED = "compReqDenied";
+	// Scenarios 2: compact at every 250 VTUs
+	public static final String COMP_250 = "compAtEvery250";
+	// Scenarios 2: compact at every 250 VTUs
+	public static final String COMP_500 = "compAtEvery500";
 
 	// total memory capacity in KB, 2000KB
 	public int totalMem = 2000;
@@ -48,6 +54,8 @@ public class MemoryManager {
 	}
 
 	public MemoryManager() {
+		// At the beginning, only one hole (block) contain all memory
+		createNewHole(this.initMem);
 	}
 
 	/**
@@ -112,7 +120,8 @@ public class MemoryManager {
 				// job didn't take the whole size of a hole
 				Hole tempNewHole = createNewHole(memHolesList.get(firstFitHoleIndex).size - job.getSize());
 				memHolesList.get(firstFitHoleIndex).size = job.getSize();
-				if (tempNewHole.size <= job.getSize()) {
+				coalescence();
+				if (null != tempNewHole && tempNewHole.size <= job.getSize()) {
 					fragHolesList.add(tempNewHole);// mark
 				}
 			}
@@ -167,7 +176,8 @@ public class MemoryManager {
 				// job didn't take the whole size of a hole
 				Hole tempNewHole = createNewHole(memHolesList.get(bestFitHoleIndex).size - job.getSize());
 				memHolesList.get(bestFitHoleIndex).size = job.getSize();
-				if (tempNewHole.size <= job.getSize()) {
+				coalescence();
+				if (null != tempNewHole && tempNewHole.size <= job.getSize()) {
 					fragHolesList.add(tempNewHole);// mark
 				}
 			}
@@ -223,7 +233,8 @@ public class MemoryManager {
 				// job didn't take the whole size of a hole
 				Hole tempNewHole = createNewHole(memHolesList.get(worstFitHoleIndex).size - job.getSize());
 				memHolesList.get(worstFitHoleIndex).size = job.getSize();
-				if (tempNewHole.size <= job.getSize()) {
+				coalescence();
+				if (null != tempNewHole && tempNewHole.size <= job.getSize()) {
 					fragHolesList.add(tempNewHole);// mark
 				}
 			}
@@ -239,6 +250,7 @@ public class MemoryManager {
 				}
 			}
 		}
+		coalescence();
 	}
 
 	// storage utilization = used_mem/initMem
@@ -330,7 +342,7 @@ public class MemoryManager {
 	/**
 	 * coalescence the mem holes
 	 */
-	private void coalescence() {
+	protected void coalescence() {
 		Hole temp = null;
 		for (Iterator iterator = memHolesList.iterator(); iterator.hasNext();) {
 			Hole hole = (Hole) iterator.next();
@@ -339,6 +351,9 @@ public class MemoryManager {
 					// collapse two holes
 					temp.size += hole.size;
 					iterator.remove();
+					// after coalescence, remove hole from fragment 
+					fragHolesList.remove(temp);
+					fragHolesList.remove(hole);
 				} else {
 					temp = hole;
 				}
@@ -346,38 +361,31 @@ public class MemoryManager {
 				temp = null;
 			}
 		}
-		//after coalescence, there is no fragment
-		fragHolesList.clear();
+//		fragHolesList.clear();
 	}
 
 	/**
 	 * compact the mem holes
+	 * compact only when compL which is the current invoke
+	 * location and the current strategy matched. 
 	 */
-	private void compaction() {
-		int temp = 0;
-		for (Iterator iterator = memHolesList.iterator(); iterator.hasNext();) {
-			Hole hole = (Hole) iterator.next();
-			if (null != hole.job) {
-				temp += hole.size;
-			}else{
-				iterator.remove();
+	protected void compaction(String compL, String strategy) {
+		if (compL.equals(strategy)) {
+
+			int temp = 0;
+			for (Iterator iterator = memHolesList.iterator(); iterator.hasNext();) {
+				Hole hole = (Hole) iterator.next();
+				if (null != hole.job) {
+					temp += hole.size;
+				} else {
+					iterator.remove();
+				}
 			}
+			// compact all free mem as a large hole
+			createNewHole(initMem - temp);
+			// after compaction, there is no fragment
+			fragHolesList.clear();
 		}
-		//compact all free mem as a large hole
-		createNewHole(initMem - temp);
-		//after compaction, there is no fragment
-		fragHolesList.clear();
 	}
-	
-	public static void main(String[] args) {
-		MemoryManager memoryManager = new MemoryManager();
-		for (int i = 0; i < 10; i++) {
-			Hole hole = memoryManager.createNewHole(i+100);
-			if (i%3 == 0) {
-				hole.job = Job.createNewJob();
-			}
-		}
-		memoryManager.compaction();
-		
-	}
+
 }
